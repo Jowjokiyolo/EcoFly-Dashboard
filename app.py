@@ -65,7 +65,7 @@ with ui.nav_panel("Home"):
                                 y=KPI_10["kgCO2e per year"]*(co2_for_year(input.year())/co2_for_year(2025))/10**6, 
                                 palette='viridis')
                 plot.set_xlabel("Airport") # Set x-axis label for the plot
-                plot.set_ylabel(r"$1\cdot{}10^6$ kgCO2e per year") # Set y-axis label for the plot
+                plot.set_ylabel(r"CO2e per year ($10^6$ kg)") # Set y-axis label for the plot
                 plot.ticklabel_format(axis="y", style='plain') # Format the y-axis label to display as plain numbers
                 plt.title("Annual CO2 Emissions by Airport") # Set title of the plot
                 return plot.figure # Return the generated plot figure for display
@@ -121,5 +121,7 @@ with ui.nav_panel("SAF Utalisation"):
             @render.plot
             def local_safplot():
                 return safplot()
+        
+        
 
 # End of the code

@@ -30,6 +30,7 @@ def co2_for_year(year: int) -> float:
     # Calculates the estimated CO2 using a predefined quadratic formula based on the input 'year'
     return ((-621765841/9000) * year**2 + (177837343907630/660893) * year - 1043944847030/4)
 
+# Functions returning CO2 emissions for each SAF with a given Blend Ratio
 def hefa(ratio):
     fuel = KPI["Fuel/y"].sum()
     JA1 = 3.84
@@ -90,7 +91,7 @@ def safplot():
                 
                 # Set labels and title
                 plot.set_xlabel('SAF Percentage (%)')
-                plot.set_ylabel(r'CO2 Emissions ($10^6kg$)')
+                plot.set_ylabel(r'CO2 Emissions ($10^6$ kg)')
                 plot.ticklabel_format(axis='y', style='plain')
                 # Add grid for better readability
                 plt.grid(True, linestyle='--', alpha=0.7)
