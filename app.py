@@ -10,7 +10,7 @@ import seaborn as sns                           # For creating statistical plots
 ui.page_opts(title="EcoFly Dashboard", fillable=True)
 
 # Start defining the content of the sidebar
-with ui.sidebar():
+with ui.sidebar(title="Options", open='closed'):
     # Create a slider named "year" for selecting a year from 2025 to 2070, starting at 2025
     ui.input_slider("year", 'Select Year', min=2025, max=2070, value=2025, sep='')
 
@@ -110,5 +110,16 @@ with ui.nav_panel("Home"):
                 def co2reduc():
                     # Display a hardcoded 25% CO2 reduction value
                     return f"{100-100*co2_for_year(input.year())/co2_for_year(2025):.1f}%"
+                
+
+
+with ui.nav_panel("SAF Utalisation"):
+    with ui.layout_column_wrap(width=1/2):
+        with ui.card():
+            ui.card_header("CO2 Emissions vs SAF Percentage")
+            
+            @render.plot
+            def local_safplot():
+                return safplot()
 
 # End of the code
