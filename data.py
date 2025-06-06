@@ -3,12 +3,20 @@ import pandas as pd # Used for reading and manipulating data, like CSV and Excel
 import matplotlib.pyplot as plt # Used for creating static, interactive, and animated visualizations in Python
 
 # Load data into pandas DataFrames
-KPI = pd.read_csv(r"Data/Data.csv") # Reads flight data from 'Data.csv' into the KPI DataFrame
-KPI_DASH = pd.read_excel("Data.xlsx", sheet_name=2) # Reads the third sheet of 'Data.xlsx' for dashboard KPIs
+#KPI = pd.read_csv(r"Data/Data.csv") # Reads flight data from 'Data.csv' into the KPI DataFrame
+shorthaul = pd.read_excel(r"Data.xlsx")
+longhaul = pd.read_excel(r"Data.xlsx", sheet_name=1)
+
+# Join and remove unused Columns
+KPI = pd.concat([shorthaul, longhaul], ignore_index=True)
+KPI = KPI.drop(["Unnamed: 5"], axis=1)
+KPI.to_csv(r"Data/Data.csv")
+
+Dashboard_KPI = pd.read_excel("Data.xlsx", sheet_name=2) # Reads the third sheet of 'Data.xlsx' for dashboard KPIs
 
 # Groups KPI data by 'TYPE' for potential long-haul(_LH) and short-haul(_SH) analysis
-# KPI_LH = KPI.groupby("TYPE")
-# KPI_SH = KPI.groupby("TYPE")
+KPI_TYPE = KPI.groupby("Type")
+
 
 # Prepare data for "Top 10 CO2 Emitting Flights" plot
 # Sorts the KPI data by 'kgCO2e per year' in descending order and selects the top 10 rows
