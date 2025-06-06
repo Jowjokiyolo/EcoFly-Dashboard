@@ -13,6 +13,7 @@ ui.page_opts(title="EcoFly Dashboard", fillable=True)
 with ui.sidebar(title="Options", open='closed'):
     # Create a slider named "year" for selecting a year from 2025 to 2070, starting at 2025
     ui.input_slider("year", 'Select Year', min=2025, max=2070, value=2025, sep='')
+    ui.input_slider("saf", "Select SAF%", min=0, max=100, value=0, post='%')
 
 with ui.nav_panel("Home"):
 
@@ -114,7 +115,7 @@ with ui.nav_panel("Home"):
 
 
 with ui.nav_panel("SAF Utalisation"):
-    with ui.layout_column_wrap(width=1/2):
+    with ui.layout_column_wrap(fill = False, width=1/2):
         with ui.card():
             ui.card_header("CO2 Emissions vs SAF Percentage")
             
@@ -122,6 +123,21 @@ with ui.nav_panel("SAF Utalisation"):
             def local_safplot():
                 return safplot()
         
+        with ui.card():
+            ui.card_header("Total Cost vs SAF Percentage")
+            
+            @render.plot
+            def local_costplot():
+                return costplot()
         
+    with ui.layout_column_wrap(fill=False, width=1/2):
+    
+        with ui.card():
+            ui.card_header("Required SAF Blend Over Time")
+            
+            @render.plot
+            def saf_ratio_plot():
+                return saf_ratio_over_time_plot()
+
 
 # End of the code
