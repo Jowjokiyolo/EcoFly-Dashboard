@@ -1,8 +1,8 @@
 # Import necessary libraries for this dashboard
-from shiny.express import input, render, ui # For creating the interactive web UI elements
-from faicons import icon_svg # For using icons in the UI
-from data import * # Imports data and functions needed for this dashboard from 'data.py'
-import seaborn as sns # For creating statistical plots in the dashboard
+from shiny.express import input, render, ui     # For creating the interactive web UI elements
+from faicons import icon_svg                    # For using icons in the UI
+from data import *                              # Imports data and functions needed for this dashboard from 'data.py'
+import seaborn as sns                           # For creating statistical plots in the dashboard
 
 # --- Define the user interface (UI) layout and elements ---
 
@@ -68,14 +68,18 @@ with ui.layout_columns(fill=False, width=1/2):
     with ui.card(fill=True):
         # Set the header for this card
         ui.card_header("Further KPI's")
+        with ui.layout_column_wrap(width=1/2):
         # Indicates that the 'year_display' function will render a UI element
-        @render.ui
-        def year_display():
-            # Display the currently selected year from the slider input
-            return ui.div(
-                {"style": "text-align: center; font-weight: bold; font-size: 24px; margin: 15px 0;"},
-                f"{input.year()}" # Get the current year value from the slider
-            )
+            @render.ui
+            def year_display():
+                # Display the currently selected year from the slider input
+                return ui.div(
+                    {"style": "text-align: center; font-weight: bold; font-size: 24px; margin: 15px 0;"},
+                    f"{input.year()}" # Get the current year value from the slider
+                )
+            @render.text
+            def safperct():
+                return saf_for_year(input.year())
 
         # Create a value box displaying an icon for 'kgCO2e/ASK'    
         with ui.value_box(showcase=icon_svg("plane-departure")):
@@ -95,6 +99,6 @@ with ui.layout_columns(fill=False, width=1/2):
             @render.text
             def co2reduc():
                 # Display a hardcoded 25% CO2 reduction value
-                return f"{25}%"
+                return f"{100-100*co2_for_year(input.year())/co2_for_year(2025):.1f}%"
 
 # End of the code

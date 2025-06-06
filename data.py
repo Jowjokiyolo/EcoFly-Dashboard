@@ -23,4 +23,3 @@ def co2_for_year(year: int) -> float:
     # Calculates the estimated CO2 using a predefined quadratic formula based on the input 'year'
     return ((-621765841/9000) * year**2 + (177837343907630/660893) * year - 1043944847030/4)
 
-# End of code
