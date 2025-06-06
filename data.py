@@ -217,6 +217,8 @@ def saf_ratio_over_time_plot():
     # Plot all SAF types
     plot = sns.lineplot(data=df, x='Year', y='Required Blend Ratio (%)', 
                         hue='SAF Type', palette='viridis')
+    plt.legend(loc='center left')
+    
     
     # Set labels and title
     plot.set_xlabel('Year')
@@ -228,5 +230,22 @@ def saf_ratio_over_time_plot():
     
     # Add grid for better readability
     plt.grid(True, linestyle='--', alpha=0.7)
+
+    # Create a secondary y-axis for CO2 emissions
+    ax2 = plt.twinx()
+
+    # Extract unique years for the CO2 line
+    unique_years = sorted(df['Year'].unique())
+    co2_values = [co2_for_year(year)/10**6 for year in unique_years]  # Convert to millions
+
+    # Plot CO2 emissions on the secondary axis
+    plt.plot(unique_years, co2_values, color='red', linestyle='--', label='CO2 Target')
+
+    # Set labels for the secondary axis
+    ax2.set_ylabel(r'CO2 Emissions ($10^6$ kg)')
+    ax2.tick_params(axis='y')
+
+    plt.legend()
+
     
     return plt.gcf()
