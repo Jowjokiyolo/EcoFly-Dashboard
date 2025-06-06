@@ -13,6 +13,8 @@ KPI = pd.concat([shorthaul, longhaul], ignore_index=True)
 KPI = KPI.drop(["Unnamed: 5"], axis=1)
 KPI.to_csv("Data/Data.csv")
 
+SAF_PLUS_MINUS = pd.read_excel("Data.xlsx", sheet_name=3)
+
 Dashboard_KPI = pd.read_excel("Data.xlsx", sheet_name=2)
 
 # Top 10 CO2 emitters
@@ -151,7 +153,8 @@ def saf_ratio_over_time_plot():
     plot = sns.lineplot(data=df, x="Year", y="Required Blend Ratio (%)", hue="SAF Type", palette="viridis")
     plot.set_xlabel("Year")
     plot.set_ylabel("Required SAF Blend (%)")
-    plot.set_title("Required SAF Blend to Reach Standards")
+    plot.set_title("Required SAF Blend to Reach ADL")
+    sns.move_legend(obj=plot, loc="center left")
     plt.ylim(0, 100)
     plt.grid(True, linestyle="--", alpha=0.7)
 

@@ -114,7 +114,7 @@ with ui.nav_panel("Home"):
                 
 
 
-with ui.nav_panel("SAF Utalisation"):
+with ui.nav_panel("SAF Utilization"):
     with ui.layout_column_wrap(fill = False, width=1/2):
         with ui.card():
             ui.card_header("CO2 Emissions vs SAF Percentage")
@@ -138,6 +138,22 @@ with ui.nav_panel("SAF Utalisation"):
             @render.plot
             def saf_ratio_plot():
                 return saf_ratio_over_time_plot()
+            
+        with ui.card():
+            ui.card_header("SAF Feasibility")
+
+            @render.data_frame
+            def local_saf_feasability():
+                return SAF_PLUS_MINUS
+            with ui.value_box(showcase=icon_svg("dollar-sign")):
+                "Total Cost for HEFA Blend (2050 Price)"
+                @render.text
+                def local_total_cost_hefa():
+                    return f"${hefa(input.saf()/100, True):,.2f}"
+                
+                @render.text
+                def local_blend():
+                    return f"with {input.saf()}% HEFA Blend"
 
 
 # End of the code
