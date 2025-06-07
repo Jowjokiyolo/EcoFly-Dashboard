@@ -1,3 +1,7 @@
+"""
+THIS FILE IS USED TO CALCULATE THE TOTAL CO2 REDUCTION WITH A QUADRATIC MODEL
+"""
+
 from sympy import symbols, Eq, solve
 
 # Define symbols

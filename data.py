@@ -100,6 +100,7 @@ def safplot():
     plot = sns.lineplot(data=df, x="SAF Percentage", y=df["CO2 Emissions"]/10**6, hue="SAF Type", palette="viridis")
     plot.set_xlabel("SAF Percentage (%)")
     plot.set_ylabel("CO2 Emissions (10⁶ kg)")
+    plot.set_title("CO2 emissions per SAF")
     plot.ticklabel_format(axis="y", style="plain")
     plt.grid(True, linestyle="--", alpha=0.7)
     
@@ -121,6 +122,7 @@ def costplot():
     plot = sns.lineplot(data=df, x="SAF Percentage", y=df["Cost"]/10**6, hue="SAF Type", palette="viridis")
     plot.set_xlabel("SAF Percentage (%)")
     plot.set_ylabel("Cost (Million $)")
+    plot.set_title("Cost of SAF Utilization")
     plot.ticklabel_format(axis="y", style="plain")
     plt.grid(True, linestyle="--", alpha=0.7)
     

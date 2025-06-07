@@ -13,9 +13,9 @@ ui.page_opts(title="EcoFly Dashboard", fillable=True)
 with ui.sidebar(title="Options", open='closed'):
     # Create a slider named "year" for selecting a year from 2025 to 2070, starting at 2025
     ui.input_slider("year", 'Select Year', min=2025, max=2070, value=2025, sep='')
-    ui.input_slider("saf", "Select SAF%", min=0, max=100, value=0, post='%')
+    ui.input_slider("saf", "Select SAF%", min=0, max=100, value=14, post='%')
 
-with ui.nav_panel("Home"):
+with ui.nav_panel("Baseline"):
 
     # Create a column layout with one narrow column (1 unit) and one wide column (11 units)
     with ui.layout_columns(fill=False, col_widths=(2, 10)):
@@ -63,8 +63,8 @@ with ui.nav_panel("Home"):
 
                 # Create a bar plot from 'KPI_10' data, showing Airport vs. scaled CO2 emissions
                 plot = sns.barplot(KPI_10, x="Destination",
-                                y=KPI_10["kgCO2e per year"]*(co2_for_year(input.year())/co2_for_year(2025))/10**6, 
-                                palette='viridis')
+                                y=KPI_10["kgCO2e per year"]/10**6, 
+                                hue="Destination",palette='viridis')
                 plot.set_xlabel("Airport") # Set x-axis label for the plot
                 plot.set_ylabel(r"CO2e per year ($10^6$ kg)") # Set y-axis label for the plot
                 plot.ticklabel_format(axis="y", style='plain') # Format the y-axis label to display as plain numbers
@@ -156,4 +156,7 @@ with ui.nav_panel("SAF Utilization"):
                     return f"with {input.saf()}% HEFA Blend"
 
 
+
+with ui.nav_panel("Fleet Renewal"):
+    "gooniee"
 # End of the code
