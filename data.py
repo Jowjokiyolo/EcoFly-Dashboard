@@ -3,25 +3,34 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
+
+# Define base directory
+BASE_DIR = Path(__file__).parent
+DATA_DIR = BASE_DIR / "Data"
 
 # Load data
-shorthaul = pd.read_excel("Data.xlsx")
-longhaul = pd.read_excel("Data.xlsx", sheet_name=1)
+excel_path = BASE_DIR / "Data.xlsx"
+shorthaul = pd.read_excel(excel_path)
+longhaul = pd.read_excel(excel_path, sheet_name=1)
 
 # Join and clean
 KPI = pd.concat([shorthaul, longhaul], ignore_index=True)
 KPI = KPI.drop(["Unnamed: 5"], axis=1)
-KPI.to_csv("Data/Data.csv")
+KPI.to_csv(DATA_DIR / "Data.csv")
 
-SAF_PLUS_MINUS = pd.read_excel("Data.xlsx", sheet_name=3)
+SAF_PLUS_MINUS = pd.read_excel(excel_path, sheet_name=3)
 
-Dashboard_KPI = pd.read_excel("Data.xlsx", sheet_name=2)
+Dashboard_KPI = pd.read_excel(excel_path, sheet_name=2)
 
 # Top 10 CO2 emitters
 KPI_10 = KPI.sort_values(by=["kgCO2e per year"], ascending=False).head(10)
 
 # CO2 per ASK
 CO2_ASK = KPI["kgCO2e per year"].sum()/KPI["ASK/year"].sum()
+
+# Final KPI Table
+KPI_SUST_FEASB = pd.read_csv(DATA_DIR / "KPITABLE.csv", index_col=0)
 
 # CO2 reduction trajectory
 def co2_for_year(year: int) -> float:

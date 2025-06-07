@@ -1,6 +1,10 @@
 # Import necessary libraries for this dashboard
 from shiny.express import input, render, ui     # For creating the interactive web UI elements
 from faicons import icon_svg                    # For using icons in the UI
+from pathlib import Path                        # For handling file paths in a cross-platform way
+BASE_DIR = Path(__file__).parent
+
+# Import all data and functions from data.py
 from data import *                              # Imports data and functions needed for this dashboard from 'data.py'
 import seaborn as sns                           # For creating statistical plots in the dashboard
 
@@ -66,9 +70,9 @@ with ui.nav_panel("Baseline"):
                                 y=KPI_10["kgCO2e per year"]/10**6, 
                                 hue="Destination",palette='viridis')
                 plot.set_xlabel("Airport") # Set x-axis label for the plot
-                plot.set_ylabel(r"CO2e per year ($10^6$ kg)") # Set y-axis label for the plot
+                plot.set_ylabel(r"CO2e per year ($10^6$ kg)")  # Set y-axis label for the plot
                 plot.ticklabel_format(axis="y", style='plain') # Format the y-axis label to display as plain numbers
-                plt.title("Annual CO2 Emissions by Airport") # Set title of the plot
+                plt.title("Baseline CO2 Emissions by Airport") # Set title of the plot
                 return plot.figure # Return the generated plot figure for display
         
         # Start another card component that fills the remaining space in this column layout
@@ -157,6 +161,13 @@ with ui.nav_panel("SAF Utilization"):
 
 
 
-with ui.nav_panel("Fleet Renewal"):
-    "gooniee"
+with ui.nav_panel("KPI's"):
+    with ui.layout_column_wrap(fill=False):
+        with ui.card():
+            ui.card_header("Strategy KPI's")
+
+            @render.data_frame
+            def local_kpi_table():
+                return KPI_SUST_FEASB
+
 # End of the code
