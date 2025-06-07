@@ -1,0 +1,9 @@
+pandas
+matplotlib
+seaborn
+openpyxl
+numpy
+shiny
+shinylive
+sympy
+faicons
