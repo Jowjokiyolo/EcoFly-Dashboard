@@ -97,14 +97,14 @@ with ui.nav_panel("Baseline"):
                     )
 
 
-            # Create a value box displaying an icon for 'kgCO2e/ASK'    
+            # Create a value box displaying an icon for 'kton CO2 per year'    
             with ui.value_box(showcase=icon_svg("plane-departure")):
                 # Set the text label for this value box
-                "kgCO2e/ASK (10^6 kg)"
+                "kton CO2 per year"
                 # Decorator to indicate that the 'co2_ask' function will render text
                 @render.text
                 def co2_ask():
-                    # Calculate and display the CO2 per ASK for the selected year, formatted
+                    # Calculate and display the kton CO2 for the selected year, formatted
                     return f"{co2_for_year(input.year())/10**6:.1f}"
                 
             # Create another value box displaying an icon for 'CO2 Reduction'
