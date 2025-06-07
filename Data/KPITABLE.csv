@@ -1,6 +1,6 @@
 ,Strategy,Baseline 2025,Fleet Renewal 2050,SAF Utilization 2050,Lithium Carbon Offsetting 2050
-0,Total Fuel,161918.00,129534.40,161918.00,161918.00
-1,Total Emissions in kton,675.83,337.91,337.91,337.91
+0,Total Fuel (tonnes),161918.00,129534.40,161918.00,161918.00
+1,Total Emissions (kton),675.83,337.91,337.91,337.91
 2,Available Seats,1814056,2109600,1814056,1814056
 3,Technical feasibility,++,+,+,+
 4,Legislation,-,+,+,+
