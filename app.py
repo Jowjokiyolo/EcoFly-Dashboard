@@ -52,6 +52,7 @@ with ui.nav_panel("Baseline"):
             def kpi():
                 # Display the 'KPI_DASH' data as a table in this card (All values formatted with 2 decimals)
                 return Dashboard_KPI.round(2)
+            "CO2 emissions are in kton"
 
     # Create another column layout with a width of half the available space
     with ui.layout_columns(fill=False, width=1/2):
