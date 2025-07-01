@@ -21,7 +21,9 @@ KPI.to_csv(DATA_DIR / "Data.csv")
 
 SAF_PLUS_MINUS = pd.read_excel(excel_path, sheet_name=3)
 
-Dashboard_KPI = pd.read_excel(excel_path, sheet_name=2)
+baseline_kpi = pd.read_excel(excel_path, sheet_name=2)
+baseline_kpi_table = baseline_kpi[["Type", "Seats", "Cargo (t)"]]
+
 
 # Top 10 CO2 emitters
 KPI_10 = KPI.sort_values(by=["kgCO2e per year"], ascending=False).head(10)
@@ -31,6 +33,36 @@ CO2_ASK = KPI["kgCO2e per year"].sum()/KPI["ASK/year"].sum()
 
 # Final KPI Table
 KPI_SUST_FEASB = pd.read_csv(DATA_DIR / "KPITABLE.csv", index_col=0)
+
+# Piechart Plot for baseline CO2 emissions
+def plot_pie_chart():
+    df = baseline_kpi[baseline_kpi["Type"]=="TOTAL"]
+    df = df.drop(columns=["Type", "Aircraft", "Flight/y", "Fuel  (t)", "kton CO2e/y", "Total CO2e", "Seats", "Cargo (t)"])
+    colors = sns.color_palette("viridis_r")
+    values = df.iloc[0].values
+    labels = df.columns
+    plt.pie(values, labels=labels, colors=colors, autopct="%.0f%%")
+    plt.title(r"Baseline CO2e Emissions: $675.84\cdot{}10^6$ kg")
+    return plt.gcf()
+
+def fleet_renewal():
+    grouped = KPI.groupby("Type").sum()
+    colors = sns.color_palette("viridis_r")
+
+    fig, ax = plt.subplots()
+    width = 0.35
+    x = np.arange(len(grouped.index))
+
+    ax.bar(x - width/2, grouped["kgCO2e per year"], width, label='Current Fleet', color=colors[5], alpha=0.8)
+    ax.bar(x + width/2, 0.8 * grouped["kgCO2e per year"], width, label='New Fleet', color=colors[0], alpha=0.8)
+    ax.set_xlabel('Aircraft Type')
+    ax.set_ylabel('CO2 Emissions (kg per year)')
+    ax.set_title("Fleet Renewal impact on Scope-1 Emissions")
+    ax.set_xticks(x)
+    ax.set_xticklabels(grouped.index)
+    ax.legend()
+
+    return plt.gcf()
 
 # CO2 reduction trajectory
 def co2_for_year(year: int) -> float:
@@ -112,6 +144,8 @@ def safplot():
     plot.set_title("CO2 emissions per SAF")
     plot.ticklabel_format(axis="y", style="plain")
     plt.grid(True, linestyle="--", alpha=0.7)
+
+    plt.savefig(r".plots/safplot.pdf")
     
     return plt.gcf()
 
@@ -177,4 +211,7 @@ def saf_ratio_over_time_plot():
     ax2.tick_params(axis="y")
 
     plt.legend()
+
+    plt.savefig(r".plots/safovertimeplot.pdf")
+
     return plt.gcf()
