@@ -34,7 +34,22 @@ baseline_kpi_table = baseline_kpi[["Type", "Seats", "Cargo (t)"]]  # Just the es
 # Final KPI table
 KPI_SUST_FEASB= pd.read_csv(DATA_DIR / "KPITABLE.csv", index_col=0)
 
-# Create a pie chart showing baseline CO2 emissions breakdown
+def strategy_costs():
+    #reading excel
+    costs_data = pd.read_csv(DATA_DIR / "costplots.csv")
+
+    #figsize
+    plt.figure(figsize=(12,8))
+
+    #barplot code
+    sns.barplot(data=costs_data,x='strategy',y='costs', hue='strategy', palette='viridis')
+    plt.xlabel('Strategy')
+    plt.ylabel('Costs in billions of euros')
+    plt.title('Costs for Strategies')
+
+    return plt.gcf()
+
+# Create a pie chart showing baseline CO2 emissions
 def plot_pie_chart():
     # Filter to get only the total emissions row
     df = baseline_kpi[baseline_kpi["Type"]=="TOTAL"]

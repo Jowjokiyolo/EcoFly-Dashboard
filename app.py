@@ -50,7 +50,7 @@ with ui.nav_panel("Home"):
         with ui.card():
             ui.card_header("Strategy: Fleet Renewal")
             @render.plot
-            def fr():
+            def figure0():
                 return fleet_renewal()
             
 
@@ -83,10 +83,14 @@ with ui.nav_panel("Home"):
         "For that reason, EcoFly will utilize a 100% HEFA SAF blend per 2050"
         "No Network or Aircraft changes have to be done to utilize this strategy."
 
-    with ui.layout_columns(col_widths=(7,5), fill=False):
+    with ui.layout_columns(col_widths=(5,7), fill=False):
         with ui.card():
             ui.card_header("Strategy Comparison")
             @render.data_frame
             def table2():
                 return KPI_SUST_FEASB
+            
+        @render.plot
+        def figure2():
+            return strategy_costs()
 
