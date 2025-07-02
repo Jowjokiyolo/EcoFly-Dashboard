@@ -83,6 +83,11 @@ with ui.nav_panel("Home"):
         "For that reason, EcoFly will utilize a 100% HEFA SAF blend per 2050"
         "No Network or Aircraft changes have to be done to utilize this strategy."
 
+        ui.card_header("Lithium Carbon Conversion")
+        "Carbon Conversion is requires Lithium Nitrite to reduce CO2 emissions. This is done after combustion "
+        "inside a jet engine to convert the CO2 that is generated into other products. This means that entire "
+        "propulsive systems have to be redesigned to acommadate the conversion."
+
     with ui.layout_columns(col_widths=(5,7), fill=False):
         with ui.card():
             ui.card_header("Strategy Comparison")
