@@ -1,174 +1,102 @@
 # Import necessary libraries for this dashboard
 from shiny.express import input, render, ui     # For creating the interactive web UI elements
-from faicons import icon_svg                    # For using icons in the UI
 from pathlib import Path                        # For handling file paths in a cross-platform way
 BASE_DIR = Path(__file__).parent
 
-# Import all data and functions from data.py
-from data import *                              # Imports data and functions needed for this dashboard from 'data.py'
-import seaborn as sns                           # For creating statistical plots in the dashboard
 
-# --- Define the user interface (UI) layout and elements ---
+
+# SHINY FRAMEWORK NOTES:
+
+# Dashboard built with Shiny for Python framework.
+# The Shiny package consists of three main classes:
+# - ui:       defines layout (cards, columns, navigation)
+# - render:   creates reactive outputs (plots, data frames)
+# - input:    handles user interactions (sliders, dropdowns)
+
+
+
+# Import all data and functions from data.py
+from data import *
 
 # Set the title of the web page to "EcoFly Dashboard" and allow it to fill the screen
 ui.page_opts(title="EcoFly Dashboard", fillable=True)
 
-# Start defining the content of the sidebar
-with ui.sidebar(title="Options", open='closed'):
-    # Create a slider named "year" for selecting a year from 2025 to 2070, starting at 2025
-    ui.input_slider("year", 'Select Year', min=2025, max=2070, value=2025, sep='')
-    ui.input_slider("saf", "Select SAF%", min=0, max=100, value=14, post='%')
+# Create a bar at the top with the title and a "Home" page.
+with ui.nav_panel("Home"):
 
-with ui.nav_panel("Baseline"):
+    # Make a dedicated row for the baseline
+    with ui.layout_columns(col_widths=(8, 4),fill=False):
 
-    # Create a column layout with one narrow column (1 unit) and one wide column (11 units)
-    with ui.layout_columns(fill=False, col_widths=(2, 10)):
-        # Start a card component (a boxed section) in the first column
+        # Make a card with a header and a plot
         with ui.card():
-            # Create a container with a top margin inside the card
-            with ui.div(style="margin-top: 2em; text-align: center;"):
-                # Display a plane icon, colored with a gradient defined below
-                icon_svg(
-                name="plane",
-                fill="url(#plane-gradient)",
-                height="5em",
-                style="solid"
-                )
-                # Embed SVG code to define the 'plane-gradient' for the icon's color
-                ui.HTML('''
-                <svg width="0" height="0">
-                <defs>
-                <linearGradient id="plane-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#4caf50"/>
-                    <stop offset="100%" stop-color="#2196f3"/>
-                </linearGradient>
-                </defs>
-                </svg>
-                ''')
-
-        # Start a card component that fills the remaining space in the column layout
-        with ui.card(fill=True):
-            @render.data_frame # Indicates that the 'kpi' function will render a data frame
-            def kpi():
-                # Display the 'KPI_DASH' data as a table in this card (All values formatted with 2 decimals)
-                return Dashboard_KPI.round(2)
-            "CO2 emissions are in kton"
-
-    # Create another column layout with a width of half the available space
-    with ui.layout_columns(fill=False, width=1/2):
-        # Start a card component for the top 10 CO2 emitting flights
-        with ui.card():
-            # Set the header for this card
-            ui.card_header("Top 10 CO2 Emitting Flights")
-
-            # Indicates that the 'emissionplot' function will render a plot
+            ui.card_header("Baseline CO2e Distribution")
+            # Makes the the piechart plot
             @render.plot
-            def emissionplot():
-                import matplotlib.pyplot as plt # Import matplotlib for plot customization (specifically for title/labels)
-
-                # Create a bar plot from 'KPI_10' data, showing Airport vs. scaled CO2 emissions
-                plot = sns.barplot(KPI_10, x="Destination",
-                                y=KPI_10["kgCO2e per year"]/10**6, 
-                                hue="Destination",palette='viridis')
-                plot.set_xlabel("Airport") # Set x-axis label for the plot
-                plot.set_ylabel(r"CO2e per year ($10^6$ kg)")  # Set y-axis label for the plot
-                plot.ticklabel_format(axis="y", style='plain') # Format the y-axis label to display as plain numbers
-                plt.title("Baseline CO2 Emissions by Airport") # Set title of the plot
-                return plot.figure # Return the generated plot figure for display
-        
-        # Start another card component that fills the remaining space in this column layout
-        with ui.card(fill=True):
-            # Set the header for this card
-            ui.card_header("Further KPI's")
-            with ui.layout_column_wrap(width=1/2, height="0.5em"):
-            # Indicates that the 'year_display' function will render a UI element
-                @render.ui
-                def year_text():
-                # Display the currently selected year from the slider input
-                    return ui.div(
-                        {"style": "text-align: center; font-size: 20px; margin: 0.5em 0;"},
-                        ui.HTML(f"Year:") # Get the current year value from the slider and make it bold
-                    )
-                @render.ui
-                def year_display():
-                    return ui.div(
-                        {"style": "text-align: center; font-size: 20px; margin: 0.5em 0;"},
-                        ui.HTML(f"<strong>{input.year()}</strong>")
-                    )
-
-
-            # Create a value box displaying an icon for 'kton CO2 per year'    
-            with ui.value_box(showcase=icon_svg("plane-departure")):
-                # Set the text label for this value box
-                "kton CO2 per year"
-                # Decorator to indicate that the 'co2_ask' function will render text
-                @render.text
-                def co2_ask():
-                    # Calculate and display the kton CO2 for the selected year, formatted
-                    return f"{co2_for_year(input.year())/10**6:.1f}"
+            def piechart():
+                # The plot for the pie chart is located inside the data.py file
+                return plot_pie_chart()
                 
-            # Create another value box displaying an icon for 'CO2 Reduction'
-            with ui.value_box(showcase=icon_svg("fire-flame-simple")):
-                # Set the text label for this value box
-                "CO2 Reduction Compared to 2025"
-                # Indicates that the 'co2reduc' function will render text
-                @render.text
-                def co2reduc():
-                    # Display a hardcoded 25% CO2 reduction value
-                    return f"{100-100*co2_for_year(input.year())/co2_for_year(2025):.1f}%"
-                
-
-
-with ui.nav_panel("SAF Utilization"):
-    with ui.layout_column_wrap(fill = False, width=1/2):
         with ui.card():
-            ui.card_header("CO2 Emissions vs SAF Percentage")
-            
-            @render.plot
-            def local_safplot():
-                return safplot()
-        
-        with ui.card():
-            ui.card_header("Total Cost vs SAF Percentage")
-            
-            @render.plot
-            def local_costplot():
-                return costplot()
-        
-    with ui.layout_column_wrap(fill=False, width=1/2):
-    
-        with ui.card():
-            ui.card_header("Required SAF Blend Over Time")
-            
-            @render.plot
-            def saf_ratio_plot():
-                return saf_ratio_over_time_plot()
-            
-        with ui.card():
-            ui.card_header("SAF Feasibility")
-
+            ui.card_header("Baseline Values")
             @render.data_frame
-            def local_saf_feasability():
-                return SAF_PLUS_MINUS
-            with ui.value_box(showcase=icon_svg("dollar-sign")):
-                "Total Cost for HEFA Blend (2050 Price)"
-                @render.text
-                def local_total_cost_hefa():
-                    return f"${hefa(input.saf()/100, True):,.2f}"
-                
-                @render.text
-                def local_blend():
-                    return f"with {input.saf()}% HEFA Blend"
-
-
-
-with ui.nav_panel("KPI's"):
-    with ui.layout_column_wrap(fill=False):
+            def table1():
+                return baseline_kpi_table
+            "EcoFly has established a baseline annual CO2e emissions level of 675.84 kilotons. "
+            "The current fleet consists of Airbus A320ceo and Boeing 777-200ER aircraft. "
+            "At present, EcoFly does not utilize Sustainable Aviation Fuel (SAF). "
+            "The operational network has a total of 10,628 flights annually."
+        
+    with ui.layout_columns(col_widths=(6, 6), fill=False):
         with ui.card():
-            ui.card_header("Strategy KPI's")
+            ui.card_header("Strategy: Fleet Renewal")
+            @render.plot
+            def figure0():
+                return fleet_renewal()
+            
 
+        with ui.card():
+            ui.card_header("Fleet Renewal Info")
+            "Fleet renewal decreases fuel usage by 20% using the A320neo and A350. "
+            "The lower fuel consumption leads to lower emissions. "
+            "These aircraft also have a higher payload capacity, increasing the seats per year by 295544. "
+            "This strategy does not meet the 2050 Goal."
+
+    with ui.layout_columns(col_widths=(6,6), fill=False):
+
+        with ui.layout_column_wrap():
+            with ui.card():
+                ui.card_header("Strategy: SAF")
+                @render.plot
+                def safplot():
+                    return saf_ratio_over_time_plot()
+        
+        with ui.layout_column_wrap(fill=False):
+            with ui.card():
+                ui.card_header("SAF Cost in 2050")
+                @render.plot
+                def figure1():
+                    return costplot()
+                
+    with ui.card(fill=False):
+        "Using 80% HEFA SAF will reach EcoFly's goal of reducing CO2 Emmissions by half. "
+        "The cost of Carbon Credits and Jet-A1 in 2050 is the reason why the price of higher SAF blends decrease. "
+        "For that reason, EcoFly will utilize a 100% HEFA SAF blend per 2050"
+        "No Network or Aircraft changes have to be done to utilize this strategy."
+
+    with ui.layout_columns(col_widths=(5,7), fill=False):
+        with ui.card():
+            ui.card_header("Strategy Comparison")
             @render.data_frame
-            def local_kpi_table():
+            def table2():
                 return KPI_SUST_FEASB
+            
+        with ui.card():
+            @render.plot
+            def figure2():
+                return strategy_costs()
+            
+            "The cost of the A320neo and A350 are considered including 14% HEFA saf as this is mandatory by 2030. "
+            "For Carbon Conversion, the impacts of carring tons Lithium Nitrate significantly reduce the"
+            "available payload that can be carried and thus reduces the revenue. The cost is also high as the "
+            "material is expensive and entire propulsion systems need to be modified for the conversion to take place."
 
-# End of the code
