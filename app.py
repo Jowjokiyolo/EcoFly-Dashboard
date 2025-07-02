@@ -90,7 +90,13 @@ with ui.nav_panel("Home"):
             def table2():
                 return KPI_SUST_FEASB
             
-        @render.plot
-        def figure2():
-            return strategy_costs()
+        with ui.card():
+            @render.plot
+            def figure2():
+                return strategy_costs()
+            
+            "The cost of the A320neo and A350 are considered including 14% HEFA saf as this is mandatory by 2030. "
+            "For Carbon Conversion, the impacts of carring tons Lithium Nitrate significantly reduce the"
+            "available payload that can be carried and thus reduces the revenue. The cost is also high as the "
+            "material is expensive and entire propulsion systems need to be modified for the conversion to take place."
 
