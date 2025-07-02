@@ -1,8 +1,8 @@
 # EcoFly Dashboard - Data Processing and Analysis Module
 # This file handles all the data loading, processing, and visualization functions
-# for the aviation sustainability dashboard
+# for the dashboard
 
-# Standard data science imports - the usual suspects for data analysis
+# Imports
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,11 +19,10 @@ excel_path = BASE_DIR / "Data.xlsx"
 shorthaul = pd.read_excel(excel_path)  # First sheet - short distance flights
 longhaul = pd.read_excel(excel_path, sheet_name=1)  # Second sheet - long distance flights
 
-# Combine short and long haul data into one master dataset
-# Then clean up by removing that pesky unnamed column that Excel sometimes creates
+# Combine short and long haul data into one dataframe
 KPI = pd.concat([shorthaul, longhaul], ignore_index=True)
-KPI = KPI.drop(["Unnamed: 5"], axis=1)  # Goodbye, mysterious column!
-KPI.to_csv(DATA_DIR / "Data.csv")  # Save our cleaned data for later use
+KPI = KPI.drop(["Unnamed: 5"], axis=1)
+KPI.to_csv(DATA_DIR / "Data.csv")  # Save data
 
 # Load additional data sheets for our analysis
 SAF_PLUS_MINUS = pd.read_excel(excel_path, sheet_name=3)  # SAF impact data
@@ -32,11 +31,10 @@ SAF_PLUS_MINUS = pd.read_excel(excel_path, sheet_name=3)  # SAF impact data
 baseline_kpi = pd.read_excel(excel_path, sheet_name=2)
 baseline_kpi_table = baseline_kpi[["Type", "Seats", "Cargo (t)"]]  # Just the essentials
 
-# Load our final processed KPI table (probably from previous analysis)
+# Final KPI table
 KPI_SUST_FEASB= pd.read_csv(DATA_DIR / "KPITABLE.csv", index_col=0)
 
 # Create a pie chart showing baseline CO2 emissions breakdown
-# Perfect for executive presentations - everyone loves a good pie chart!
 def plot_pie_chart():
     # Filter to get only the total emissions row
     df = baseline_kpi[baseline_kpi["Type"]=="TOTAL"]
@@ -50,7 +48,7 @@ def plot_pie_chart():
     
     # Create the pie chart with percentages
     plt.pie(values, labels=labels, colors=colors, autopct="%.0f%%")
-    plt.title(r"Baseline CO2e Emissions: $675.84\cdot{}10^6$ kg")  # LaTeX formatting for the win
+    plt.title(r"Baseline CO2e Emissions: $675.84\cdot{}10^6$ kg") 
     return plt.gcf()
 
 # Compare current fleet vs new fleet emissions
@@ -60,7 +58,6 @@ def fleet_renewal():
     grouped = KPI.groupby("Type").sum()
     colors = sns.color_palette("viridis_r")
 
-    # Set up a nice side-by-side bar chart
     fig, ax = plt.subplots()
     width = 0.35  # Width of the bars
     x = np.arange(len(grouped.index))
@@ -69,7 +66,7 @@ def fleet_renewal():
     ax.bar(x - width/2, grouped["kgCO2e per year"], width, label='Current Fleet', color=colors[5], alpha=0.8)
     ax.bar(x + width/2, 0.8 * grouped["kgCO2e per year"], width, label='New Fleet', color=colors[0], alpha=0.8)
     
-    # Make it look professional
+    # Add labels
     ax.set_xlabel('Aircraft Type')
     ax.set_ylabel('CO2 Emissions (kg per year)')
     ax.set_title("Fleet Renewal impact on Scope-1 Emissions")
@@ -77,13 +74,11 @@ def fleet_renewal():
     ax.set_xticklabels(grouped.index)
     ax.legend()
 
+    # Return the full figure
     return plt.gcf()
 
 # Calculate CO2 emissions target for any given year
-# This is our trajectory function - looks like a quadratic model
 def co2_for_year(year: int) -> float:
-    # This polynomial equation defines our emission reduction pathway
-    # Coefficients were probably derived from regulatory targets or company goals
     return ((-621765841/9000) * year**2 + (177837343907630/660893) * year - 1043944847030/4)
 
 # SAF (Sustainable Aviation Fuel) analysis functions
@@ -109,8 +104,8 @@ def hefa(ratio, cost=False):
 # Gas-to-Liquid SAF - synthetic fuel from natural gas
 def gas(ratio, cost=False):
     fuel = KPI["Fuel/y"].sum()
-    JA1, SAF = 3.84, -0.51  # Negative coefficient means this SAF actually reduces emissions!
-    PRICE_JA1, PRICE_SAF = 1.3, 3.2  # More expensive than regular fuel
+    JA1, SAF = 3.84, -0.51
+    PRICE_JA1, PRICE_SAF = 1.3, 3.2
     
     co2 = fuel*(JA1)*(1-ratio) + fuel*(SAF)*ratio
 
@@ -124,8 +119,8 @@ def gas(ratio, cost=False):
 # Alcohol-to-Jet SAF - made from ethanol or other alcohols
 def alc(ratio, cost=False):
     fuel = KPI["Fuel/y"].sum()
-    JA1, SAF = 3.84, -0.86  # Even better emissions reduction than gas-to-liquid
-    PRICE_JA1, PRICE_SAF = 1.3, 3.2  # Same premium pricing as other advanced SAFs
+    JA1, SAF = 3.84, -0.86
+    PRICE_JA1, PRICE_SAF = 1.3, 3.2
     
     co2 = fuel*(JA1)*(1-ratio) + fuel*(SAF)*ratio
 
@@ -139,8 +134,8 @@ def alc(ratio, cost=False):
 # Synthetic SAF - made from captured CO2 and renewable energy
 def syn(ratio, cost=False):
     fuel = KPI["Fuel/y"].sum()
-    JA1, SAF = 3.84, 1.14  # Still emits, but less than regular jet fuel
-    PRICE_JA1, PRICE_SAF = 1.3, 3.2  # Premium pricing for cutting-edge technology
+    JA1, SAF = 3.84, 1.14
+    PRICE_JA1, PRICE_SAF = 1.3, 3.2
     
     co2 = fuel*(JA1)*(1-ratio) + fuel*(SAF)*ratio
 
@@ -164,7 +159,7 @@ def safplot():
         data.append({"SAF Percentage": r * 100, "SAF Type": "Alcohol-to-Jet", "CO2 Emissions": alc(r)})
         data.append({"SAF Percentage": r * 100, "SAF Type": "Synthetic", "CO2 Emissions": syn(r)})
     
-    # Create a beautiful line plot
+    # Create a line plot
     df = pd.DataFrame(data)
     plt.figure(figsize=(10, 6))
     
@@ -174,12 +169,10 @@ def safplot():
     plot.set_title("CO2 emissions per SAF")
     plot.ticklabel_format(axis="y", style="plain")  # No scientific notation
     plt.grid(True, linestyle="--", alpha=0.7)  # Subtle grid lines
-
-    plt.savefig(r".plots/safplot.pdf")  # Save for reports
     
     return plt.gcf()
 
-# Similar plot but for costs - because money talks in the aviation industry
+# Similar plot but for costs
 def costplot():
     ratios = np.linspace(0, 1, 101)
     
@@ -196,7 +189,7 @@ def costplot():
     
     plot = sns.lineplot(data=df, x="SAF Percentage", y=df["Cost"]/10**6, hue="SAF Type", palette="viridis")
     plot.set_xlabel("SAF Percentage (%)")
-    plot.set_ylabel("Cost (Million $)")  # Show costs in millions - easier to read
+    plot.set_ylabel("Cost (Million $)")
     plot.set_title("Cost of SAF Utilization")
     plot.ticklabel_format(axis="y", style="plain")
     plt.grid(True, linestyle="--", alpha=0.7)
@@ -210,8 +203,6 @@ def saf_for_year(year, saf_coefficient):
     ratio = (co2_for_year(year)/fuel - 3.84)/(saf_coefficient-3.84)
     return min(ratio, 1)  # Can't exceed 100% SAF blend
 
-# The big kahuna - show SAF requirements over time to meet our decarbonization goals
-# This is the plot that will either excite or terrify the sustainability team
 def saf_ratio_over_time_plot():
     years = range(2025, 2071)  # Long-term planning horizon
     saf_types = {
@@ -236,8 +227,8 @@ def saf_ratio_over_time_plot():
     plot = sns.lineplot(data=df, x="Year", y="Required Blend Ratio (%)", hue="SAF Type", palette="viridis")
     plot.set_xlabel("Year")
     plot.set_ylabel("Required SAF Blend (%)")
-    plot.set_title("Required SAF Blend to Reach ADL")  # ADL = Absolute Decarbonization Limit
-    sns.move_legend(obj=plot, loc="center left")  # Move legend out of the way
+    plot.set_title("Required SAF Blend to Reach ADL")
+    sns.move_legend(obj=plot, loc="center left")
     plt.ylim(0, 100)  # Percentage scale
     plt.grid(True, linestyle="--", alpha=0.7)
 
@@ -250,7 +241,5 @@ def saf_ratio_over_time_plot():
     ax2.tick_params(axis="y")
 
     plt.legend()
-
-    plt.savefig(r".plots/safovertimeplot.pdf")  # Save the masterpiece
 
     return plt.gcf()
